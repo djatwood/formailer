@@ -71,6 +71,11 @@ func Vercel(c formailer.Config, w http.ResponseWriter, r *http.Request) {
 		delete(submission.Values, "g-recaptcha-response")
 	}
 
+	for _, email := range submission.Emails {
+		email.To = ReplaceDynamic(email.To, submission)
+		email.Subject = ReplaceDynamic(email.Subject, submission)
+	}
+
 	err = submission.Send()
 	if err != nil {
 		err = fmt.Errorf("failed to send email: %w", err)
